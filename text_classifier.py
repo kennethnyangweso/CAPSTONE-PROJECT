@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split, learning_curve
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score
 
-from imblearn.combine import SMOTEENN
+from imblearn.over_sampling import SMOTE, SMOTENC
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 
@@ -95,28 +95,31 @@ class TextClassifier:
         self.models["Ensemble"] = ensemble
 
     def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
-                     method: str = 'smoteenn') -> Tuple[np.ndarray, np.ndarray]:
+                         method: str = 'smotenc', categorical_features: Optional[List[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
+        method = method.lower()
         """Handle class imbalance in the training data.
     
         Args:
             X_train: Training features.
             y_train: Training labels.
-            : Method for handling imbalance ('smote', 'smoteenn').
+            : Method for handling imbalance ('smote', 'smotenc').
         
         Returns:
             Tuple of resampled (X_train, y_train).
         """
         method = method.lower()
     
-        if method == 'smote':
+        if method == 'smotenc':
+            if categorical_features is None:
+                raise ValueError("You must provide a list of categorical feature indices for SMOTENC.")
+            sampler = SMOTENC(categorical_features=categorical_features, random_state=self.random_state)
+        elif method == 'smote':
             sampler = SMOTE(random_state=self.random_state)
-        elif method == 'smoteenn':
-            sampler = SMOTEENN(random_state=self.random_state)
         else:
             return X_train, y_train
 
         X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resampled
+        return X_resampled, y_resample
 
     def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray, 
                          handle_imbalance: bool = False) -> Dict:
@@ -131,7 +134,7 @@ class TextClassifier:
             Dictionary of trained models.
         """
         if handle_imbalance:
-            X_train, y_train = self.handle_imbalance(X_train, y_train)
+            X_train, y_train = self.handle_imbalance(X_train, y_train, method=method, categorical_features=categorical_features)
         
         for name, model in self.models.items():
             print(f"Training {name}...")
