@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split, learning_curve
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score
 
-from imblearn.over_sampling import SMOTE
+from imblearn.combine import SMOTEENN
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 
@@ -95,23 +95,28 @@ class TextClassifier:
         self.models["Ensemble"] = ensemble
 
     def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
-                         method: str = 'smote') -> Tuple[np.ndarray, np.ndarray]:
+                     method: str = 'smoteenn') -> Tuple[np.ndarray, np.ndarray]:
         """Handle class imbalance in the training data.
-        
+    
         Args:
             X_train: Training features.
             y_train: Training labels.
-            method: Method for handling imbalance ('smote').
-            
+            : Method for handling imbalance ('smote', 'smoteenn').
+        
         Returns:
             Tuple of resampled (X_train, y_train).
         """
-        if method.lower() == 'smote':
-            smote = SMOTE(random_state=self.random_state)
-            X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
-            return X_train_resampled, y_train_resampled
+        method = method.lower()
+    
+        if method == 'smote':
+            sampler = SMOTE(random_state=self.random_state)
+        elif method == 'smoteenn':
+            sampler = SMOTEENN(random_state=self.random_state)
         else:
             return X_train, y_train
+
+        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
+        return X_resampled, y_resampled
 
     def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray, 
                          handle_imbalance: bool = False) -> Dict:
