@@ -106,6 +106,8 @@ The target variable is binary:
 - Explainability: SHAP, LIME
 
 ---
+## 📈 Data Visualization and Analysis
+
 
 
 ---
