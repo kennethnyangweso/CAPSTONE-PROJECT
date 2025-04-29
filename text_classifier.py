@@ -95,39 +95,26 @@ class TextClassifier:
         self.models["Ensemble"] = ensemble
 
     def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
-                         method: str = 'smotenc', categorical_features: Optional[List[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
+                         method: str = 'smote') -> Tuple[np.ndarray, np.ndarray]:
         """Handle class imbalance in the training data.
-
+        
         Args:
             X_train: Training features.
             y_train: Training labels.
-            method: Method for handling imbalance ('smote', 'smotenc').
-            categorical_features: List of categorical feature indices (required for SMOTENC).
-
+            method: Method for handling imbalance ('smote').
+            
         Returns:
             Tuple of resampled (X_train, y_train).
         """
-        method = method.lower()
-
-        if method == 'smotenc':
-            if not categorical_features:
-                print("⚠️ No categorical feature indices provided, falling back to SMOTE.")
-                sampler = SMOTE(random_state=self.random_state)
-            else:
-                sampler = SMOTENC(categorical_features=categorical_features, random_state=self.random_state)
-        elif method == 'smote':
-            sampler = SMOTE(random_state=self.random_state)
+        if method.lower() == 'smote':
+            smote = SMOTE(random_state=self.random_state)
+            X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+            return X_train_resampled, y_train_resampled
         else:
             return X_train, y_train
 
-        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resampled
-
-
-    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray,
-                         handle_imbalance: bool = False,
-                         categorical_features: Optional[List[int]] = None) -> Dict:
-        method = 'smotenc'
+    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray, 
+                         handle_imbalance: bool = False) -> Dict:
         """Train all added models on the given data.
         
         Args:
@@ -139,22 +126,14 @@ class TextClassifier:
             Dictionary of trained models.
         """
         if handle_imbalance:
-            if categorical_features is None:
-                print("⚠️ 'categorical_features' not provided. Falling back to SMOTE.")
-                method = 'smote'
-                categorical_features = []
-
-            X_train, y_train = self.handle_imbalance(
-                X_train, y_train, method=method, categorical_features=categorical_features
-            )
-
+            X_train, y_train = self.handle_imbalance(X_train, y_train)
+        
         for name, model in self.models.items():
             print(f"Training {name}...")
             model.fit(X_train, y_train)
             self.trained_models[name] = model
-
+        
         return self.trained_models
-
 
     def evaluate_model(self, model_name: str, X_test: np.ndarray, y_test: np.ndarray, 
                       detailed: bool = True) -> Dict:
