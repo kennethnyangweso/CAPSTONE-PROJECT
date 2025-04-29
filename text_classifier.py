@@ -351,6 +351,42 @@ class TextClassifier:
         plt.tight_layout()
         plt.show()
 
+    def plot_best_model_confusion_matrix(self, X_test: np.ndarray, y_test: np.ndarray) -> None:
+        if self.best_model_name is None:
+            raise ValueError("No best model found. Evaluate models first.")
+
+        print(f"Plotting confusion matrix for best model: {self.best_model_name}")
+        self.plot_confusion_matrix(model_name=self.best_model_name, X_test=X_test, y_test=y_test)
+
+    def check_overfitting(self, model_name: str, X_train: np.ndarray, y_train: np.ndarray,
+                          X_test: np.ndarray, y_test: np.ndarray) -> None:
+        if model_name not in self.trained_models:
+            raise ValueError(f"Model '{model_name}' has not been trained.")
+
+        model = self.trained_models[model_name]
+        train_acc = model.score(X_train, y_train)
+        test_acc = model.score(X_test, y_test)
+
+        print(f"Overfitting Check for {model_name}:")
+        print(f"Training Accuracy: {train_acc:.4f}")
+        print(f"Testing Accuracy:  {test_acc:.4f}")
+
+        gap = train_acc - test_acc
+        if gap > 0.1:
+            print("⚠️ Model might be overfitting (large train-test accuracy gap).")
+        elif gap < -0.1:
+            print("⚠️ Model might be underfitting (train accuracy lower than test).")
+        else:
+            print("✅ No strong signs of overfitting.")
+
+
+    def check_overfitting_best_model(self, X_train: np.ndarray, y_train: np.ndarray,
+                                     X_test: np.ndarray, y_test: np.ndarray) -> None:
+        if self.best_model_name is None:
+            raise ValueError("No best model set. Run evaluate_all_models first.")
+        self.check_overfitting(self.best_model_name, X_train, y_train, X_test, y_test)
+
+
     def plot_learning_curve(self, model_name: str, X: np.ndarray, y: np.ndarray,
                            cv: int = 5, train_sizes: np.ndarray = None,
                            figsize: Tuple[int, int] = (10, 6)) -> None:
