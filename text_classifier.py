@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split, learning_curve
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score
 
-from imblearn.over_sampling import SMOTENC
+from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 
