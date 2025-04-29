@@ -127,10 +127,11 @@ class TextClassifier:
         method = 'smotenc'
 
         if handle_imbalance:
-            # Default to SMOTENC if possible, fallback to SMOTE if categorical features aren't provided
+            # If categorical features are not provided, fallback to SMOTE
             if categorical_features is None:
                 print("⚠️ 'categorical_features' not provided. Falling back to SMOTE.")
                 method = 'smote'
+                categorical_features = []  # Dummy to avoid SMOTENC triggering
 
             X_train, y_train = self.handle_imbalance(
                 X_train, y_train, method=method, categorical_features=categorical_features
@@ -142,6 +143,7 @@ class TextClassifier:
             self.trained_models[name] = model
 
         return self.trained_models
+
 
     def evaluate_model(self, model_name: str, X_test: np.ndarray, y_test: np.ndarray, 
                       detailed: bool = True) -> Dict:
