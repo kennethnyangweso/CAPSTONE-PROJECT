@@ -121,26 +121,26 @@ class TextClassifier:
         X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
         return X_resampled, y_resample
 
-    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray, 
-                         handle_imbalance: bool = False) -> Dict:
-        """Train all added models on the given data.
-        
-        Args:
-            X_train: Preprocessed training features.
-            y_train: Preprocessed training labels.
-            handle_imbalance: Whether to apply imbalance handling.
-            
-        Returns:
-            Dictionary of trained models.
-        """
+    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray,
+                         handle_imbalance: bool = False,
+                         categorical_features: Optional[List[int]] = None) -> Dict:
+        method = 'smotenc'
+
         if handle_imbalance:
-            X_train, y_train = self.handle_imbalance(X_train, y_train)
-        
+            # Default to SMOTENC if possible, fallback to SMOTE if categorical features aren't provided
+            if categorical_features is None:
+                print("⚠️ 'categorical_features' not provided. Falling back to SMOTE.")
+                method = 'smote'
+
+            X_train, y_train = self.handle_imbalance(
+                X_train, y_train, method=method, categorical_features=categorical_features
+            )
+
         for name, model in self.models.items():
             print(f"Training {name}...")
             model.fit(X_train, y_train)
             self.trained_models[name] = model
-        
+
         return self.trained_models
 
     def evaluate_model(self, model_name: str, X_test: np.ndarray, y_test: np.ndarray, 
