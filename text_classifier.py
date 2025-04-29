@@ -134,7 +134,7 @@ class TextClassifier:
             Dictionary of trained models.
         """
         if handle_imbalance:
-            X_train, y_train = self.handle_imbalance(X_train, y_train, method=method, categorical_features=categorical_features)
+            X_train, y_train = self.handle_imbalance(X_train, y_train)
         
         for name, model in self.models.items():
             print(f"Training {name}...")
