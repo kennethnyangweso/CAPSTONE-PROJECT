@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split, learning_curve
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score
 
-from imblearn.over_sampling import SMOTE, SMOTENC
+from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 
@@ -94,60 +94,46 @@ class TextClassifier:
         ensemble = VotingClassifier(estimators=estimators, voting=voting)
         self.models["Ensemble"] = ensemble
 
-    
+    def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
+                         method: str = 'smote') -> Tuple[np.ndarray, np.ndarray]:
+        """Handle class imbalance in the training data.
+        
+        Args:
+            X_train: Training features.
+            y_train: Training labels.
+            method: Method for handling imbalance ('smote').
+            
+        Returns:
+            Tuple of resampled (X_train, y_train).
+        """
+        if method.lower() == 'smote':
+            smote = SMOTE(random_state=self.random_state)
+            X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+            return X_train_resampled, y_train_resampled
+        else:
+            return X_train, y_train
 
-    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray,
-                         handle_imbalance: bool = False,
-                         categorical_features: Optional[List[int]] = None) -> Dict:
-        method = 'smotenc'
-
+    def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray, 
+                         handle_imbalance: bool = False) -> Dict:
+        """Train all added models on the given data.
+        
+        Args:
+            X_train: Preprocessed training features.
+            y_train: Preprocessed training labels.
+            handle_imbalance: Whether to apply imbalance handling.
+            
+        Returns:
+            Dictionary of trained models.
+        """
         if handle_imbalance:
-            # If categorical features are not provided, fallback to SMOTE
-            if categorical_features is None:
-                print("⚠️ 'categorical_features' not provided. Falling back to SMOTE.")
-                method = 'smote'
-                categorical_features = []  # Dummy to avoid SMOTENC triggering
-
-            X_train, y_train = self.handle_imbalance(
-                X_train, y_train, method=method, categorical_features=categorical_features
-            )
-
+            X_train, y_train = self.handle_imbalance(X_train, y_train)
+        
         for name, model in self.models.items():
             print(f"Training {name}...")
             model.fit(X_train, y_train)
             self.trained_models[name] = model
-
+        
         return self.trained_models
-    
-    def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
-                         method: str = 'smotenc', categorical_features: Optional[List[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
-        """Handle class imbalance in the training data.
-
-        Args:
-            X_train: Training features.
-            y_train: Training labels.
-            method: Method for handling imbalance ('smote', 'smotenc').
-            categorical_features: List of categorical feature indices (required for SMOTENC).
-
-        Returns:
-            Tuple of resampled (X_train, y_train).
-        """
-        method = method.lower()
-
-        if method == 'smotenc':
-            if not categorical_features:
-                print("⚠️ No categorical feature indices provided, falling back to SMOTE.")
-                sampler = SMOTE(random_state=self.random_state)
-            else:
-                sampler = SMOTENC(categorical_features=categorical_features, random_state=self.random_state)
-        elif method == 'smote':
-            sampler = SMOTE(random_state=self.random_state)
-        else:
-            return X_train, y_train
-
-        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resampled
-
 
     def evaluate_model(self, model_name: str, X_test: np.ndarray, y_test: np.ndarray, 
                       detailed: bool = True) -> Dict:
@@ -356,42 +342,6 @@ class TextClassifier:
         plt.title(f'Confusion Matrix - {model_name}')
         plt.tight_layout()
         plt.show()
-
-    def plot_best_model_confusion_matrix(self, X_test: np.ndarray, y_test: np.ndarray) -> None:
-        if self.best_model_name is None:
-            raise ValueError("No best model found. Evaluate models first.")
-
-        print(f"Plotting confusion matrix for best model: {self.best_model_name}")
-        self.plot_confusion_matrix(model_name=self.best_model_name, X_test=X_test, y_test=y_test)
-
-    def check_overfitting(self, model_name: str, X_train: np.ndarray, y_train: np.ndarray,
-                          X_test: np.ndarray, y_test: np.ndarray) -> None:
-        if model_name not in self.trained_models:
-            raise ValueError(f"Model '{model_name}' has not been trained.")
-
-        model = self.trained_models[model_name]
-        train_acc = model.score(X_train, y_train)
-        test_acc = model.score(X_test, y_test)
-
-        print(f"Overfitting Check for {model_name}:")
-        print(f"Training Accuracy: {train_acc:.4f}")
-        print(f"Testing Accuracy:  {test_acc:.4f}")
-
-        gap = train_acc - test_acc
-        if gap > 0.1:
-            print("⚠️ Model might be overfitting (large train-test accuracy gap).")
-        elif gap < -0.1:
-            print("⚠️ Model might be underfitting (train accuracy lower than test).")
-        else:
-            print("✅ No strong signs of overfitting.")
-
-
-    def check_overfitting_best_model(self, X_train: np.ndarray, y_train: np.ndarray,
-                                     X_test: np.ndarray, y_test: np.ndarray) -> None:
-        if self.best_model_name is None:
-            raise ValueError("No best model set. Run evaluate_all_models first.")
-        self.check_overfitting(self.best_model_name, X_train, y_train, X_test, y_test)
-
 
     def plot_learning_curve(self, model_name: str, X: np.ndarray, y: np.ndarray,
                            cv: int = 5, train_sizes: np.ndarray = None,
