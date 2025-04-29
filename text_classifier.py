@@ -94,32 +94,7 @@ class TextClassifier:
         ensemble = VotingClassifier(estimators=estimators, voting=voting)
         self.models["Ensemble"] = ensemble
 
-    def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
-                         method: str = 'smotenc', categorical_features: Optional[List[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
-        method = method.lower()
-        """Handle class imbalance in the training data.
     
-        Args:
-            X_train: Training features.
-            y_train: Training labels.
-            : Method for handling imbalance ('smote', 'smotenc').
-        
-        Returns:
-            Tuple of resampled (X_train, y_train).
-        """
-        method = method.lower()
-    
-        if method == 'smotenc':
-            if categorical_features is None:
-                raise ValueError("You must provide a list of categorical feature indices for SMOTENC.")
-            sampler = SMOTENC(categorical_features=categorical_features, random_state=self.random_state)
-        elif method == 'smote':
-            sampler = SMOTE(random_state=self.random_state)
-        else:
-            return X_train, y_train
-
-        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
-        return X_resampled, y_resample
 
     def train_all_models(self, X_train: np.ndarray, y_train: np.ndarray,
                          handle_imbalance: bool = False,
@@ -143,6 +118,35 @@ class TextClassifier:
             self.trained_models[name] = model
 
         return self.trained_models
+    
+    def handle_imbalance(self, X_train: np.ndarray, y_train: np.ndarray, 
+                         method: str = 'smotenc', categorical_features: Optional[List[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
+        """Handle class imbalance in the training data.
+
+        Args:
+            X_train: Training features.
+            y_train: Training labels.
+            method: Method for handling imbalance ('smote', 'smotenc').
+            categorical_features: List of categorical feature indices (required for SMOTENC).
+
+        Returns:
+            Tuple of resampled (X_train, y_train).
+        """
+        method = method.lower()
+
+        if method == 'smotenc':
+            if not categorical_features:
+                print("⚠️ No categorical feature indices provided, falling back to SMOTE.")
+                sampler = SMOTE(random_state=self.random_state)
+            else:
+                sampler = SMOTENC(categorical_features=categorical_features, random_state=self.random_state)
+        elif method == 'smote':
+            sampler = SMOTE(random_state=self.random_state)
+        else:
+            return X_train, y_train
+
+        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
+        return X_resampled, y_resampled
 
 
     def evaluate_model(self, model_name: str, X_test: np.ndarray, y_test: np.ndarray, 
