@@ -1,4 +1,4 @@
-# 🧠 Hate Speech Detection in Tweets (Kenyan Politics)
+# 🧠 Hate Speech Detector
 
 ## 📌 Project Overview
 
