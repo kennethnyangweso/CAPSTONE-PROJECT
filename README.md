@@ -141,7 +141,30 @@ The target variable is binary:
 - Explainability: SHAP, LIME
 
 ---
+
+## 🧼 Data Cleaning
+
+- - Removed duplicates and irrelevant columns
+- Handled missing values in `location` and `text`
+- Cleaned text (lowercased, removed URLs, mentions, emojis, etc.)
+
+---
+
 ## 📈 Data Visualization and Analysis
+
+### 📊 Tweet Count by Sentiment(label)
+
+This chart shows the distribution of tweet count segmented by sentiment labels — **Not_hate** and **Hate Speech**. It provides an overview of class distribution, which is important for understanding dataset balance and guiding model evaluation.
+
+
+- **Not_hate** tweets dominate during regular days.
+- **Hate speech** tweets tend to cluster around certain controversial dates.
+
+![Tweet Count by Sentiment]![image](https://github.com/user-attachments/assets/4c8ddf4b-4f70-486c-8dd5-0f357924a690)
+
+![Tweet Volume by Politician and Sentiment]![image](https://github.com/user-attachments/assets/7638dbd8-e98b-4a3c-87c2-391e1e079f10)
+
+![Average Engagement Score by Year (2016–2025)]![image](https://github.com/user-attachments/assets/57550f75-fe70-443f-aa42-a0ca7b695336)
 
 
 
