@@ -88,12 +88,47 @@ Total Records: **11,317 tweets**
 | `Texts`           | Raw tweet content (main input for NLP)                                       |
 | `Created At`      | Timestamp of tweet publication for trend/time analysis                       |
 
+---
+
+## 🛠️ Tools & Libraries Used
+
+The following Python libraries were used for data processing, visualization, feature engineering, text analysis, and modeling:
+
+### 📊 Data Manipulation & Visualization
+- `pandas`, `numpy`: Data handling and numerical operations
+- `matplotlib.pyplot`, `seaborn`: Static visualizations
+- `plotly.express`, `plotly.graph_objects`, `plotly.figure_factory`: Interactive visualizations
+
+### 🧠 Feature Engineering & Utilities
+- `re`, `calendar`, `dateutil.easter`: Text and date processing
+- `spacy`: Advanced NLP and tokenization
+- `rapidfuzz`: Fast string matching for fuzzy joins
+
+### 🧼 Text Preprocessing
+- `nltk`: Tokenization, stopword removal, and lemmatization
+  - `stopwords`, `word_tokenize`, `WordNetLemmatizer`
+- `string`: Handling punctuation
+- `sklearn.feature_extraction.text.TfidfVectorizer`: Vectorizing text data
+
+### 🤖 Modeling & Evaluation
+- `torch`: Deep learning framework (PyTorch)
+- `sklearn`: Model building, preprocessing, and evaluation
+  - `train_test_split`, `LabelEncoder`, `metrics` (accuracy, F1, confusion matrix, etc.)
+- `transformers` (from HuggingFace):
+  - `AutoTokenizer`, `AutoModelForSequenceClassification`, `Trainer`, `TrainingArguments`, `DataCollatorWithPadding`
+- `datasets`: HuggingFace Datasets library for efficient model input
+
+### 🚫 Warning Management
+- `warnings`: Used to suppress unnecessary warnings during runtime
+
+---
+
 ### 🏷️ Label Classes
 
 The target variable is binary:
 
 - `Hate` – Direct hate speech or dehumanizing statements  
-- `Neutral` – Informative, benign, or opinionated but respectful content
+- `None-hate` – Informative, benign, or opinionated but respectful content
 
 ---
 
