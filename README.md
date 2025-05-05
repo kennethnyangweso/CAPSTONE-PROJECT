@@ -1,4 +1,4 @@
-# 🧠 Hate Speech Detector
+#  Hate Speech Detector
 
 ## 📌 Project Overview
 
@@ -152,7 +152,67 @@ The target variable is binary:
 
 ## 📈 Data Visualization and Analysis
 
-### 📊 Tweet Count by Sentiment(label)
+### N-Gram Frequency Analysis
+
+This section presents an overview of the top N-gram frequencies (from unigrams to 4-grams) extracted from a textual dataset, highlighting key themes and entities.
+
+### Top 20 1-Grams (Unigrams)
+
+![Top 1-Grams]![image](https://github.com/user-attachments/assets/a1d76125-8fa3-4e90-8dbd-3447dea98e9e)
+
+
+**Observations:**
+- The most frequent unigrams are common English stopwords such as **"the"**, **"to"**, **"and"**, **"is"**, and **"of"**.
+- Among named entities, **"ruto"** appears with notable frequency, suggesting a high presence of Kenya's President **William Ruto** in the text.
+- Other pronouns like **"he"**, **"you"**, **"we"**, and **"I"** also rank highly, indicating a conversational or narrative-heavy dataset.
+
+---
+
+### Top 20 2-Grams (Bigrams)
+
+![Top 2-Grams]![image](https://github.com/user-attachments/assets/5168441c-8e41-4237-b7ee-0d66b8b3fe71)
+
+
+**Observations:**
+- Frequent bigrams include expected phrase structures like **"of the"**, **"in the"**, and **"is a"**.
+- Key named entities become clearer: **"william ruto"**, **"riggy g"**, **"rachel ruto"**, **"raila odinga"**, and **"martha koome"**—all prominent figures in Kenyan politics.
+- Shows a strong political discourse embedded in the dataset.
+
+---
+
+### Top 20 3-Grams (Trigrams)
+
+![Top 3-Grams]![image](https://github.com/user-attachments/assets/ae9abd5e-473f-4330-a3b0-198aa03667f7)
+
+
+**Observations:**
+- Named trigrams such as **"president william ruto"**, **"mama rachel ruto"**, and **"cs aden duale"** confirm the political orientation of the dataset.
+- Political sentiment and action-oriented phrases like **"ruto must go"**, **"reject finance bill"**, and **"is our business"** begin to surface.
+- This level offers insight into not just entities but their roles or associated events.
+
+---
+
+### Top 20 4-Grams
+
+![Top 4-Grams]![image](https://github.com/user-attachments/assets/fe53a41d-f738-4860-82cc-b6ddaf12859a)
+
+
+**Observations:**
+- Clear, coherent phrases emerge such as:
+  - **"we are african and"**, **"africa is our business"**
+  - **"reject the finance bill"**
+  - **"first lady rachel ruto"**, **"chief justice martha koome"**
+- Highlights both socio-political narratives and government-related discourse.
+- Phrases suggest emphasis on **identity, governance, and resistance** themes.
+
+---
+
+> ### Summary
+
+>This N-gram analysis reveals a **politically charged dataset** centered on Kenyan political figures, governance, and current socio-political themes. The higher-order N-grams (3- and 4-grams) provide the clearest insight into **named entities**, **political discourse**, and **sentiment** (e.g., protest language, national identity assertions).
+---
+
+### 📊 Distribution of Labels (label)
 
 This chart shows the distribution of tweet count segmented by sentiment labels — **Not_hate** and **Hate Speech**. It provides an overview of class distribution, which is important for understanding dataset balance and guiding model evaluation.
 
@@ -160,11 +220,16 @@ This chart shows the distribution of tweet count segmented by sentiment labels �
 - **Not_hate** tweets dominate during regular days.
 - **Hate speech** tweets tend to cluster around certain controversial dates.
 
-![Tweet Count by Sentiment]![image](https://github.com/user-attachments/assets/4c8ddf4b-4f70-486c-8dd5-0f357924a690)
+![Distribution of Labels]![image](https://github.com/user-attachments/assets/34abf4d4-ca70-443f-8476-dfa25b8142a6)
+
 
 ![Tweet Volume by Politician and Sentiment]![image](https://github.com/user-attachments/assets/7638dbd8-e98b-4a3c-87c2-391e1e079f10)
 
-![Average Engagement Score by Year (2016–2025)]![image](https://github.com/user-attachments/assets/57550f75-fe70-443f-aa42-a0ca7b695336)
+![Average Engagement Score by Year (2016–2025)]![image]![image](https://github.com/user-attachments/assets/296402c7-04f7-4418-bf52-715c335a783d)
+
+![Average Engagement score by Holiday]!![image](https://github.com/user-attachments/assets/0501a83d-b05f-4ae7-a5f9-e2e1de15c054)
+
+![Engagement Breakdown Likes / Retweets / Replies vs Label]![image](https://github.com/user-attachments/assets/c3393a73-601e-4060-b642-c642ed22567e)
 
 
 
