@@ -20,7 +20,7 @@ model_path = "./final_model/final_model"
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-label_map = {0: "non_hatespeech", 1: "hatespeech"}
+label_map = {0: "hatespeech", 1: "not_hatespeech"}
 
 @app.post("/Hatespeech_detection-csv")
 async def Hatespeech_detection_csv(file: UploadFile = File(...)):
