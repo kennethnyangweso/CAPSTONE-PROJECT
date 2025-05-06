@@ -243,6 +243,8 @@ This chart shows the distribution of tweet count segmented by sentiment labels �
 
 ![PairPlot of numeric features]![image](https://github.com/user-attachments/assets/984557b1-41a4-4fda-a17d-9d812cbcb7cc)
 
+---
+
 ## Machine Learning Models
 > **Machine Learning (ML)** is a branch of Artificial Intelligence (AI) that enables computers to learn from data and improve their performance over time without being explicitly programmed. In ML, algorithms identify patterns in data, make predictions, and adapt to new information.
 
@@ -254,7 +256,7 @@ The pipeline contains 6 default models ie :
 - Random Forest
 - Gradient Boosting
 - Neural Network
-
+---
 ### Training the models
 - 'Training Logistic Regression...'
 - 'Training Linear SVM...'
@@ -266,7 +268,7 @@ The pipeline contains 6 default models ie :
  'Random Forest': RandomForestClassifier(class_weight='balanced', random_state=42),
  'Gradient Boosting': GradientBoostingClassifier(random_state=42),
  'Neural Network': MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000, random_state=42)}
-
+---
 ### Evaluate the base models
 - 'Evaluating Logistic Regression...'
 - 'Evaluating Linear SVM...'
@@ -306,6 +308,300 @@ The pipeline contains 6 default models ie :
 
 > The best base model on F1_score is Logistic classifier with F1 score: 0.6609. However the f1_score is average meaning the model was classifying fairly okay. The best way forward is to perform a hyperparameter search on the base models to get the best performing parameters for the models ensuring the best F1 score.
 
+---
+### Hyperparameter tuning
+Above we can see the models performed averagely from the average accuracy and F1 score. We attempt to tune the hyperparameters to get the parameters that will give us the best F1 score. The default cross validation search method for our pipeline is a GridsearchCV.
+
+#### Support Vector Machine
+
+- **Best parameters for Linear SVM: {'C': 0.1, 'class_weight': 'balanced', 'max_iter': 1000}**
+- 'Best f1_macro score': 0.6564
+- 'Best model Accuracy': 0.6793
+> The best parameters for the Linear Support vector machine still gives an average F1 score and accuracy but it is not higher than the best base model.
+
+#### Logistic Classifier
+- **Best parameters for Logistic Regression: {'C': 1, 'max_iter': 100, 'solver': 'liblinear'}**
+- 'Best f1_macro score': 0.6562
+- 'Best model Accuracy': 0.6780
+> This is the best performing model overall with an f1 score of 65.81%. This is however not a very reliable model with an accuracy of 65.72%. We try to ensemble the models to see if performance will increase
+
+---
+
+### Ensembling the best performimg models
+We attempt to ensemble the best performing models to see if they will perform better by covering up each others weaknesses.
+
+--- Ensemble Evaluation ---
+- 'Ensemble Accuracy': 0.6586141131595677
+- 'Ensemble Macro F1 Score': 0.6509557693261269
+- 'Ensemble Classification Report': {'Hate': {'precision': 0.5433017591339648, 'recall': 0.668053244592346, 'f1-score': 0.5992537313432836, 'support': 1202.0}, 'Not_Hate': {'precision': 0.7607913669064749, 'recall': 0.6527777777777778, 'f1-score': 0.7026578073089701, 'support': 1944.0}, 'accuracy': 0.6586141131595677, 'macro avg': {'precision': 0.6520465630202199, 'recall': 0.6604155111850619, 'f1-score': 0.6509557693261269, 'support': 3146.0}, 'weighted avg': {'precision': 0.6776945746170416, 'recall': 0.6586141131595677, 'f1-score': 0.6631499562883868, 'support': 3146.0}}
+
+> The ensembled model did not perform better than the logistic regression on f1 score hence not suitable for our problem.
+![image](https://github.com/user-attachments/assets/0abae943-a627-45da-a7e5-c1bb05733023)
+
+---
+### Deep Learning Models
+- Since our traditional machine learning models are underperforming—particularly in correctly classifying the minority class—we will now explore deep learning approaches using Hugging Face Transformers. Transformers are state-of-the-art models in Natural Language Processing (NLP) that have demonstrated superior performance in a variety of text classification tasks, including those involving imbalanced and multilingual data.
+
+> Why Use Hugging Face Transformers?
+
+**The main advantages of using Hugging Face transformers for this project include:**
+- 'Multilingual Understanding': Our dataset contains tweets in various languages, including English and local dialects such as Sheng (a Swahili-English hybrid spoken in Kenya).
+Traditional models struggle with such linguistic diversity, but transformers like XLM-RoBERTa are trained on hundreds of languages and are capable of understanding context in multilingual settings.
+- 'Contextual Embeddings': Unlike classical methods like TF-IDF, which treat words independently, transformers generate contextual embeddings. This means that the meaning of a word is understood in relation to surrounding words, which is critical for nuanced tasks like hate speech detection.
+- 'Transfer Learning': Transformers are pre-trained on massive corpora and can be fine-tuned on smaller datasets. This makes them ideal for our use case, where the data size (~9700 tweets) may not be sufficient to train deep models from scratch.
+
+**Microsoft/deberta-v3-base**
+- The microsoft/deberta-v3-base is a 'pretrained transformer-based large language model from Microsoft', part of the DeBERTa (Decoding-enhanced BERT with disentangled attention) family. It is a highly optimized alternative to BERT and RoBERTa, designed to improve both accuracy and efficiency in NLP tasks.
+
+**Key Features of DeBERTa V3**
+- 'Disentangled Attention Mechanism' - Separates content and position embeddings during attention, improving contextual understanding.
+- 'Enhanced Mask Decoder' - Improves the masked language modeling objective by using a more refined decoding strategy during pretraining.
+- 'Better Generalization' - Achieves higher accuracy than BERT and RoBERTa on various NLP benchmarks.
+- 'Efficient' - It provides better performance with fewer parameters compared to older models.
+
+**[1458/1458 20:08, Epoch 6/6]**
+
+| Step | Loss     | Precision | Recall   | F1 Score |
+|------|----------|-----------|----------|----------|
+| 500  | 0.476400 | 0.560481  | 0.704791 | 0.695103 |
+| 1000 | 0.318600 | 0.774572  | 0.668212 | 0.663774 |
+![image](https://github.com/user-attachments/assets/2e58f25b-9b91-4a4a-9995-52a306589c9c)
+
+📊 Train Accuracy: 0.7970
+📊 Train F1 Score: 0.7907
+✅ Validation Accuracy: 0.7048
+✅ Validation F1 Score: 0.6951
+[[511 262]
+ [311 857]]
+
+> This model has an accuracy score of 70.48% and an F1 score of 69.41%. This is a good model. It is classyfying quite better than the first model due to a higher f1 score and the higher accuracy. We save this model in preparation for deployment.
+
+> **deberta_base_hatespeech_5 was the best model hence it is saved for the next step ie Deployment**
+---
+# Conclusion and Recommendations
+
+## 📌 Conclusion
+
+### 🔍 Model Performance
+
+**DeBERTa Model** clearly outperforms the **Logistic Classifier** across all major metrics:
+
+- ✅ Higher accuracy and F1 score on validation.
+- ✅ Better confusion matrix with fewer misclassifications.
+- ✅ Lower overfitting risk (closer train and validation scores).
+
+**Logistic Classifier** likely underfits or is not well-optimized, especially struggling with the **"Hate"** classification due to high false negatives.
+
+---
+
+### 🕒 Time of Day Trend
+
+- **Midday (10 AM – 2 PM)** is the most active window for both *Hate* and *Not_Hate* tweets.
+- Strategic timing for:
+  - 🔹 Moderation
+  - 🔹 Counter-speech
+  - 🔹 Promotional posting
+
+**Evening resurgence (7–9 PM)** of Hate tweets may indicate:
+- Reactions to daily events.
+- Increased posting after work hours.
+
+---
+
+### 📆 Yearly Tweet Trend
+
+- Engagement follows a **cyclical pattern**, peaking in select years — possibly aligned with national or global events.
+- Peaks may correspond to:
+  - 🗳️ Election periods
+  - 📰 Socio-political developments
+
+- **Sharp declines** after peak years (e.g., 2018 → 2019, 2024 → 2025) suggest reduced discourse or event-driven fatigue.
+
+---
+
+### 🧑‍💼 Politician Engagement Score
+
+#### 🚀 Top Performing Politicians
+- **Betty Maina** and **John Kiarie** exceed **10,000** average engagement scores.
+- Indicates viral content or high public interest (controversy or trending issues).
+
+#### ⚖️ Moderate Engagement Group
+- **Alice Nganga**, **Noordin Haji**, and **Didmus Barasa**: Scores between **1,500–2,500**.
+
+#### ⬇️ Lower Engagement Politicians
+- **Martha Koome**, **Japheth Koome**, **Kalonzo Musyoka**, and **Johnson Sakaja**: Around **1,000 or below**.
+
+> The inclusion of "unknown" implies some tweets couldn't be attributed to a specific politician but still saw moderate engagement.
+
+---
+
+### 🗣️ Top Discussed Politicians
+
+| Politician         | Tweet Volume | Hate Tweet % | Insight                                                       |
+|--------------------|--------------|--------------|---------------------------------------------------------------|
+| **William Ruto**   | > 1,500      | ~45%         | Highly polarized public sentiment                             |
+| **Raila Odinga**   | ~540         | Balanced     | High volume, mix of hate and non-hate                         |
+| **Oscar Sudi**     | High         | >50%         | Strong public backlash or controversy                         |
+| **Rigathi Gachagua**| High        | >50%         | Similar trend to Oscar Sudi                                   |
+| **Fred Matiang’i** | Moderate     | Lower        | Sustained public interest                                     |
+| **Kithure Kindiki**| Moderate     | Lower        | Sustained public interest                                     |
+| **Rachel Ruto**    | Low          | Low          | Minimal public discourse                                      |
+| **Martha Koome**   | Low          | Low          | Minimal public discourse                                      |
+
+---
+
+## 💡 Recommendations
+
+### 🧠 Model Utilization and Enhancement
+
+- **✅ Prioritize DeBERTa for Deployment**: Given superior accuracy, F1 score, and balanced confusion matrix.
+- **🔍 Monitor Overfitting Trends**: Ensure stability with future data, drift, or evolving hate speech patterns.
+
+---
+
+### 🛡️ Moderation and Platform Strategy
+
+- **📈 Focus Moderation During Peak Hours (10 AM – 2 PM)**:
+  - Deploy more resources
+  - Automate flagging tools
+  - Introduce timely interventions
+
+- **🕑 Counter-Speech Timing**:
+  - Schedule awareness campaigns or positive content
+  - Ideal windows: **10 AM–2 PM** and **7–9 PM**
+
+---
+
+### 🗓️ Event-Driven Planning
+
+- **🧭 Prepare for Election and Crisis Peaks**:
+  - Use past data to predict future flashpoints
+  - Scale moderation and monitoring accordingly
+
+- **🧹 Post-Event Cooldown Monitoring**:
+  - Leverage low-activity periods to refine models
+  - Reassess baseline hate speech levels
+
+---
+
+### 📊 Engagement Strategy
+
+- **Engagement ≠ Volume**: High engagement may reflect strong (positive/negative) sentiment.
+- Politicians with high engagement should evaluate the **quality** of interactions, not just quantity.
+- Lower engagement profiles could:
+  - Reassess communication strategy
+  - Boost public engagement with targeted content
+
+---
+
+### 🧾 Top Discussed Politicians Strategy
+
+- Profiles like **William Ruto**, **Raila Odinga**, and **Oscar Sudi** dominate discussions, including hate speech.
+- Hate speech is disproportionately concentrated on a few figures — indicating:
+  - 🧨 Targeted harassment
+  - ⚖️ Divisive public perception
+
+> Understanding the *context* (e.g., campaigns, scandals) is key to strategic intervention.
+
+---
+
+## 🚀 Deployment
+
+Deployment is the process of making your application live and accessible. It includes:
+
+- 📦 Packaging
+- 🧪 Testing
+- ⚙️ Configuring the software for production
+
+## 🚀 Deployment Instructions
+
+### 📁 Step 1: Create the FastAPI App
+
+Create a file named `app.py` — this is your application entry point.
+
+```python
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import pandas as pd
+import torch
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+model_path = "./final_model/final_model"
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+label_map = {0: "not_hatespeech", 1: "hatespeech"}
+
+@app.post("/Hatespeech_detection-csv")
+async def Hatespeech_detection_csv(file: UploadFile = File(...)):
+    try:
+        df = pd.read_csv(file.file)
+        print("📄 CSV Loaded:", df.head())  # Debug print
+
+        if "text" not in df.columns:
+            return JSONResponse(content={"error": "CSV must contain a 'text' column."}, status_code=400)
+
+        inputs = tokenizer(df["text"].tolist(), padding=True, truncation=True, return_tensors="pt")
+        with torch.no_grad():
+            outputs = model(**inputs)
+        preds = torch.argmax(outputs.logits, dim=1).tolist()
+        df["Detection_result"] = [label_map[p] for p in preds]
+
+        print("✅ Predictions:", df["Detection_result"].value_counts().to_dict())  # Debug print
+        return df[["text", "Detection_result"]].to_dict(orient="records")
+
+    except Exception as e:
+        print("❌ Exception occurred:", str(e))
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+```
+
+---
+
+### ▶️ Step 2: Run the App
+
+Use Uvicorn to start the FastAPI server:
+
+```bash
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+
+---
+
+### 📫 Access the API
+
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Endpoint**: `POST /Hatespeech_detection-csv`
+
+Upload a CSV with a `text` column to receive predictions.
+
+Example CSV format:
+
+```csv
+text
+"This is an example tweet."
+"Another sample input for hate speech detection."
+```
+---
+
+### 📦 Dependencies
+
+Install required packages with:
+
+```bash
+pip install fastapi uvicorn transformers pandas torch
+```
+---
 
 ## 🤝 Contribution
 
