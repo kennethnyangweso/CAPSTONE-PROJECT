@@ -222,6 +222,9 @@ This chart shows the distribution of tweet count segmented by sentiment labels ‚
 
 ![Distribution of Labels]![image](https://github.com/user-attachments/assets/34abf4d4-ca70-443f-8476-dfa25b8142a6)
 
+![Engagement Score vs Hour of Day]![image](https://github.com/user-attachments/assets/a6a4bac8-ff37-481b-b62b-33c8bb266eec)
+
+![Label vs Holiday]![image](https://github.com/user-attachments/assets/3a3ed535-bbe0-4af2-a8fa-9071abf6ad82)
 
 ![Tweet Volume by Politician and Sentiment]![image](https://github.com/user-attachments/assets/7638dbd8-e98b-4a3c-87c2-391e1e079f10)
 
@@ -231,9 +234,78 @@ This chart shows the distribution of tweet count segmented by sentiment labels ‚
 
 ![Engagement Breakdown Likes / Retweets / Replies vs Label]![image](https://github.com/user-attachments/assets/c3393a73-601e-4060-b642-c642ed22567e)
 
+![Word count vs text length per label category]![image](https://github.com/user-attachments/assets/848da21e-4e4e-459f-99c1-4882fd6787f6)
 
+**![Distribution of Word count vs text length per label category]![image](https://github.com/user-attachments/assets/e90107d8-1de5-44ef-98f1-26b655c0474c)
 
----
+**---
+![Correlation Heatmap of Likes, Retweets & Replies]![image](https://github.com/user-attachments/assets/7a5f4648-b64a-4551-90b2-9d82bfbb1989)
+
+![PairPlot of numeric features]![image](https://github.com/user-attachments/assets/984557b1-41a4-4fda-a17d-9d812cbcb7cc)
+
+## Machine Learning Models
+> **Machine Learning (ML)** is a branch of Artificial Intelligence (AI) that enables computers to learn from data and improve their performance over time without being explicitly programmed. In ML, algorithms identify patterns in data, make predictions, and adapt to new information.
+
+**Base models**
+The pipeline contains 6 default models ie :
+- Naive Bayes
+- Logistic Regression
+- Linear SVM
+- Random Forest
+- Gradient Boosting
+- Neural Network
+
+### Training the models
+- 'Training Logistic Regression...'
+- 'Training Linear SVM...'
+- 'Training Random Forest...'
+- 'Training Gradient Boosting...'
+- 'Training Neural Network...'
+> {'Logistic Regression': LogisticRegression(class_weight='balanced', max_iter=1000, random_state=42),
+ 'Linear SVM': LinearSVC(class_weight='balanced', random_state=42),
+ 'Random Forest': RandomForestClassifier(class_weight='balanced', random_state=42),
+ 'Gradient Boosting': GradientBoostingClassifier(random_state=42),
+ 'Neural Network': MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000, random_state=42)}
+
+### Evaluate the base models
+- 'Evaluating Logistic Regression...'
+- 'Evaluating Linear SVM...'
+- 'Evaluating Random Forest...'
+- 'Evaluating Gradient Boosting...'
+- 'Evaluating Neural Network...'
+
+  - Best model: Logistic Regression with F1 score: 0.6609
+  - Model: Logistic Regression
+  - Accuracy: 0.6742
+  - F1 Score: 0.6609
+  ![image](https://github.com/user-attachments/assets/f58d5685-3719-40da-891c-c4838c496c04)
+
+  - Model: Linear SVM
+  - Accuracy: 0.6726
+  - F1 Score: 0.6592
+    
+  ![image](https://github.com/user-attachments/assets/d704cf14-d425-4bd8-8329-57688e685fec)
+
+   - Model: Random Forest
+  - Accuracy: 0.6224
+  - F1 Score: 0.6000
+    
+  ![image](https://github.com/user-attachments/assets/c7791ae2-fd5f-4e52-8f97-9a7e645db806)
+
+  - Model: Gradient Boosting
+  - Accuracy: 0.6370
+  - F1 Score: 0.6293
+    
+  ![image](https://github.com/user-attachments/assets/98066089-e403-4541-a344-8cad8aa3f4ce)
+
+  - Model: Neural Network
+  - Accuracy: 0.6408
+  - F1 Score: 0.6211
+    
+  ![image](https://github.com/user-attachments/assets/807889e9-4cc2-45f8-9a54-ca414c6a7e84)
+
+> The best base model on F1_score is Logistic classifier with F1 score: 0.6609. However the f1_score is average meaning the model was classifying fairly okay. The best way forward is to perform a hyperparameter search on the base models to get the best performing parameters for the models ensuring the best F1 score.
+
 
 ## ü§ù Contribution
 
